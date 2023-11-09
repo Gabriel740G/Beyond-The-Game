@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter  } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { EmpresaService } from 'src/app/services/empresa.service';
 import { Empresa } from 'src/app/Empresa';
 
@@ -16,11 +16,10 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
-  @Output() onSubmit = new EventEmitter<Empresa>();
-  @Input() perfilData: Empresa | null = null;
+  userId: number
+  empresa: Empresa;
 
   editForm!: FormGroup
-  empresa!: Empresa
 
   faPencil = faPencil;
   faTrash = faTrashCan;
@@ -30,49 +29,39 @@ export class SettingsComponent implements OnInit {
     private empresaService: EmpresaService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
-    this.editForm = new FormGroup({
-      nome: new FormControl('', [Validators.required]),
-      senha: new FormControl('', [Validators.required])
+    this.editForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      password: ['']
     });
 
-    const id = Number(this.route.snapshot.paramMap.get("id"))
-
-    
-  }
-
-  async editHandler(perfilData: Empresa) {
-    const id = this.empresa.id
-
-    const formData = new FormData()
-
-    formData.append('nome', perfilData.nome)
-    formData.append('senha', perfilData.senha)
-
-    await this.empresaService.updateEmpresa(this.empresa, id!).subscribe();
-
-    this.router.navigate(['/home-biblioteca'])
-
-  }
-
-  get nome() {
-    return this.editForm.get('nome')!;
-  }
-
-  get senha() {
-    return this.editForm.get('senha')!;
-  }
-
-  submit() {
-    if(this.editForm.invalid) {
-      return;
+    const token = localStorage.getItem('token');
+    if (token) {
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      this.userId = tokenData.IdEmpresa; // Supondo que 'IdEmpresa' seja a propriedade correta no token
     }
-    console.log(this.editForm.value);
-  
-    this.onSubmit.emit(this.editForm.value);
+
+    this.empresaService.getEmpresaById(this.userId).subscribe(empresa => {
+      this.empresa = empresa; // Preenche o objeto do jogo com os valores atuais
+    });
+  }
+
+  onSubmit() {
+    if (this.editForm.valid) {
+      this.empresaService.updateEmpresa(this.userId, this.empresa)
+        .subscribe(
+          (response) => {
+            console.log('Perfil do usuário atualizado com sucesso', response);
+          },
+          (error) => {
+            console.error('Erro ao atualizar perfil do usuário', error);
+          }
+        );
+    }
   }
 
   logout() {

@@ -22,6 +22,8 @@ export class AddJogoComponent implements OnInit {
 
   btnText = 'Enviar';
 
+  userId: number;
+
   jogoForm!: FormGroup
 
   faPencil = faPencil;
@@ -40,12 +42,28 @@ export class AddJogoComponent implements OnInit {
       descricao: ['', Validators.required],
       nome: ['', Validators.required],
       classificacao: ['', Validators.required],
-      empresa_id: [''],
+      empresa_id: [`${this.userId}`],
       empresa: [null]
     })
 }
 
-ngOnInit(): void {}
+ngOnInit(): void {
+  const token = localStorage.getItem('token');
+     if (token) {
+      try {
+        // Decodificar o token (assumindo que é um token JWT)
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+
+        // Verificar se o token contém a propriedade "IdEmpresa"
+        if (tokenData && tokenData.IdEmpresa) {
+          // Extrair o ID do usuário do token
+          this.userId = tokenData.IdEmpresa;
+        }
+      } catch (error) {
+        console.error('Erro ao decodificar o token:', error);
+      }
+    }
+}
 
 submitForm() {
   if (this.jogoForm.valid) {

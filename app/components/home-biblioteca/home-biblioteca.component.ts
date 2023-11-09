@@ -5,7 +5,6 @@ import { JogosService } from 'src/app/services/jogos.service';
 import { EmpresaService } from 'src/app/services/empresa.service';
 import { Empresa } from 'src/app/Empresa';
 import { AuthService } from 'src/app/services/auth.service';
-import { environment } from 'src/environments/environment.development';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,9 +33,7 @@ export class HomeBibliotecaComponent implements OnInit {
     private empresaService: EmpresaService,
     private authService: AuthService,
     private router: Router
-  ) {
-    this.username = this.authService.getLoggedInUser();
-  }
+  ) {}
 
   ngOnInit() {
     this.atualizarContador();
@@ -46,6 +43,22 @@ export class HomeBibliotecaComponent implements OnInit {
        this.jogos = data;
      });
 
+     const token = localStorage.getItem('token');
+     if (token) {
+      try {
+        // Decodificar o token (assumindo que é um token JWT)
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+
+        // Verificar se o token contém a propriedade "IdEmpresa"
+        if (tokenData && tokenData.IdEmpresa && tokenData.unique_name) {
+          // Extrair o ID do usuário do token
+          this.userId = tokenData.IdEmpresa;
+          this.username = tokenData.unique_name;
+        }
+      } catch (error) {
+        console.error('Erro ao decodificar o token:', error);
+      }
+    }
   }
 
   mostrarDetalhes(jogo: Jogo) {
@@ -67,8 +80,8 @@ export class HomeBibliotecaComponent implements OnInit {
     this.quant_games = this.contarDivs('card');
   }
 
-  editarJogo() {
-    this.router.navigate(['/editar-jogo', this.jogoSelecionado.id]);
+  editarJogo(id: number) {
+    this.router.navigate(['/editar-jogo', id]);
   }
 
   logout() {

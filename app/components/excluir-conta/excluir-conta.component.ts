@@ -14,7 +14,7 @@ import { Empresa } from 'src/app/Empresa';
   styleUrls: ['./excluir-conta.component.css']
 })
 export class ExcluirContaComponent implements OnInit {
-  empresa?: Empresa;
+  userId: number;
 
   faPencil = faPencil;
   faTrash = faTrashCan;
@@ -29,21 +29,17 @@ export class ExcluirContaComponent implements OnInit {
     private route: ActivatedRoute,
     private empresaService: EmpresaService,
     private authService: AuthService,
-  ) {}
+  ) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      this.userId = tokenData.IdEmpresa; // Supondo que 'IdUsuario' seja a propriedade correta no token
+    }
+  }
 
   ngOnInit(): void {}
 
-  deleteEmpresa(empresa: Empresa): void {
-    if (empresa) {
-      const id = empresa.id;
-      if (confirm('Tem certeza que deseja apagar este usuário?')) {
-        this.empresaService.removeEmpresa(id).subscribe(() => {
-          
-          this.router.navigate(['/login']);
-        });
-      }
-    }
-  }
+  deleteAccount() {}
 
   voltarInicio() {
     this.router.navigate(['/settings']);

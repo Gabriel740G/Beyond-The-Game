@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
         const token = response.token; 
         if (token) {
           localStorage.setItem('token', token);
-  
           this.router.navigate(['/home-biblioteca']);
         }
       },

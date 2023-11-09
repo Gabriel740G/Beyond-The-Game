@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { AppRoutingModule } from './app-routing.module';
 import { CommonModule } from '@angular/common';
+import { JwtModule } from '@auth0/angular-jwt';
 
 import { AppComponent } from './app.component';
 import { SettingsComponent } from './components/settings/settings.component';
@@ -47,7 +48,14 @@ import { InfoJogoComponent } from './components/info-jogo/info-jogo.component';
     HttpClientModule, 
     FormsModule,
     ReactiveFormsModule, 
-    FontAwesomeModule
+    FontAwesomeModule,
+    // JwtModule.forRoot({
+    //   config: {
+    //     tokenGetter: tokenGetter,
+    //     allowedDomains: ['example.com'], // Domínios permitidos (ajuste conforme sua necessidade)
+    //     disallowedRoutes: ['example.com/api/auth'] // Rotas excluídas (ajuste conforme sua necessidade)
+    //   }
+    // })
   ],
   providers: [],
   bootstrap: [AppComponent]

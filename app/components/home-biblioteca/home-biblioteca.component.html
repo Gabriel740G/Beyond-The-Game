@@ -93,10 +93,8 @@
         </figcaption>
       </figure>
     </div>
-    <!-- fechamento div jogo -->
-    <app-info-jogo [jogoSelecionado]="jogoSelecionado" *ngIf="mostrarPopUp" (editarJogoEvent)="editarJogo()"></app-info-jogo>
+    <app-info-jogo [jogoSelecionado]="jogoSelecionado" *ngIf="mostrarPopUp" (editarJogoEvent)="editarJogo(this.jogoSelecionado.id)" (fecharPopUpEvent)="fecharPopUp()"></app-info-jogo>
   </div>
-  <!-- fechamento div cards -->
 </div>
 <ng-template #noJogos>
   <h1 style="padding: 50px; margin: 0 30%; width: 31%">
